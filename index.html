@@ -1,0 +1,70 @@
+<html>
+    <head>
+        <link type="text/css" rel="stylesheet" href="vendor/css/dropzone.css">
+        <link type="text/css" rel="stylesheet" href="dropzone-dragpath.css">
+    </head>
+    <body>
+        <div id="dropzone-dragpath-wrapper" class="dz">
+            <div class="dropzone-label">
+                <span>Drag your files onto this box to select metadata before uploading</span>
+            </div>
+        </div>
+        <div id="previewTemplate"></div>
+        <div id="docProgressZone"></div>
+        <div id="results"></div>
+
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E=" crossorigin="anonymous"></script>
+        <script src="vendor/js/jquery.dragbetter.js"></script>
+        <script src="vendor/js/dropzone.js"></script>
+        <script src="dropzone-dragpath.js"></script>
+        <script type="text/javascript">
+            var properties = [
+                { field: 'Vehicle Type', name: 'Bicycle', value: 'bicycle', children: [
+                    { field: 'Color', options: [ { name: 'Pink', value: 'pink' }, { name: 'Green', value: 'green' } ]},
+                ] },
+                { field: 'Vehicle Type', name: 'Car', value: 'car', children: [
+                    { field: 'Color', options: [ { name: 'Red', value: 'red' }, { name: 'Blue', value: 'blue' } ]},
+                    { field: 'Tire Size', options: [ { name: '22 in.', value: '22' }, { name: '24 in.', value: '24' } ]},
+                ] },
+                { field: 'Vehicle Type', name: 'Skateboard', value: 'skateboard', children: [
+                    { field: 'Color', options: [ { name: 'Black', value: 'black' }, { name: 'Purple', value: 'purple' } ]},
+                ] }
+            ];
+
+            $(function(){
+                var dragPathDz = new Dropzone('#dropzone-dragpath-wrapper', { 
+                    url: '/', 
+                    previewTemplate: $("#previewTemplate").html(),
+                    previewsContainer: "#docProgressZone",
+                    clickable: false });
+
+                dragPathDz.on("drop", function(e){
+                    dropUploadDocument(e);
+                });   
+
+                dz_dragpath.init('#dropzone-dragpath-wrapper', 150, properties);
+            });
+
+            function dropUploadDocument(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                var files = e.dataTransfer.files;
+
+                $('#results').html('');
+                $('#results').append($('<h2></h2>').html('Files'));
+
+                var fileList = $('<ul></ul>');
+                $.each(files, function (index, file) {
+                    $(fileList).append($("<li></li>").html(file.name));
+                });
+                $('#results').append(fileList);
+
+                $('#results').append($('<h2></h2>').html('Metadata'));
+                $('#results').append(JSON.stringify(dz_dragpath.dropProperties));
+
+                return false;
+            }
+        </script>
+    </body>
+</html>
